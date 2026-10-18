@@ -18,13 +18,19 @@ app.get("/health", (req, res) => {
 
 // Tracks with filters + pagination
 app.get("/tracks", (req, res) => {
-  const { genre, minPopularity, minEnergy, maxEnergy } = req.query;
+    const { q, genre, minPopularity, minEnergy, maxEnergy } = req.query;
   const page = Math.max(parseInt(req.query.page) || 1, 1);
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const offset = (page - 1) * limit;
 
   const where = [];
   const params = [];
+
+    if (q) {
+    where.push("(track_name LIKE ? OR artists LIKE ?)");
+    params.push(`%${q}%`, `%${q}%`);
+  }
+
 
   if (genre) {
     where.push("track_genre = ?");
@@ -113,6 +119,13 @@ app.get("/scatter", (req, res) => {
   const rows = db
     .prepare(`SELECT ${feature} AS x, popularity AS y FROM tracks ORDER BY RANDOM() LIMIT ?`)
     .all(limit);
+  res.json(rows);
+});
+
+app.get("/genres", (req, res) => {
+  const rows = db
+    .prepare("SELECT track_genre AS genre, COUNT(*) AS count FROM tracks GROUP BY track_genre ORDER BY track_genre")
+    .all();
   res.json(rows);
 });
 
