@@ -1,6 +1,5 @@
 .venv/
 node_modules/
-data/
-*.db
+data/raw/
 *.db-journal
 __pycache__/
