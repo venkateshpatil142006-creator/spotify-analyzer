@@ -26,6 +26,8 @@ Frontend (http://localhost:5173):
 - GET /correlations : correlation of each audio feature with popularity
 - GET /artist/:name : artist profile (averages, top 5 tracks, genre mix)
 
+- GET /scatter?feature=energy&limit=500 : random sample of (feature, popularity) points for scatter plots
+
 CORS is enabled, so the frontend can call the API directly.
 
 ## Rebuild the data (optional)

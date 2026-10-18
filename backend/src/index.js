@@ -100,6 +100,22 @@ app.get("/artist/:name", (req, res) => {
   res.json({ artist: req.params.name, ...stats, topTracks, genres });
 });
 
+app.get("/scatter", (req, res) => {
+  const allowed = [
+    "danceability", "energy", "loudness", "valence", "acousticness",
+    "tempo", "speechiness", "instrumentalness", "liveness",
+  ];
+  const feature = req.query.feature;
+  if (!allowed.includes(feature)) {
+    return res.status(400).json({ error: "Invalid feature", allowed });
+  }
+  const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
+  const rows = db
+    .prepare(`SELECT ${feature} AS x, popularity AS y FROM tracks ORDER BY RANDOM() LIMIT ?`)
+    .all(limit);
+  res.json(rows);
+});
+
 app.listen(3000, (err) => {
   if (err) {
     console.error("Could not start server:", err.message);
